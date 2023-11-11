@@ -1,9 +1,6 @@
 
 
 
-
-
-
 class Error (Exception):
     pass
 
@@ -98,7 +95,6 @@ class Empleado:
 
 
 
-
 class Piloto(Empleado):
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
@@ -148,9 +144,12 @@ class Piloto(Empleado):
         self._numero_auto = numero
 
 
+
+
 class DirectorEquipo(Empleado):
     # No additional attributes for now
     pass
+
 
 
 
@@ -171,7 +170,9 @@ class Mecanico(Empleado):
         self._score = score_int
 
 
-class Modelo_Auto:
+
+
+class Auto:
     def __init__(self, modelo, anio, score):
         self.modelo = modelo
         self.anio = anio
@@ -217,6 +218,30 @@ class Modelo_Auto:
         
 
 
+class Equipo:
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.empleados = []
+        self.auto = None
+
+    def agregar_empleado(self, empleado):
+        self.empleados.append(empleado)
+
+    def asignar_auto(self, auto):
+        self.auto = auto
+
+    def obtener_informacion(self):
+        info = "Equipo: " + self.nombre + "\n"
+        info += "Empleados:\n"
+        for empleado in self.empleados:
+            info += " - " + empleado.nombre + "\n"
+        info += "Auto: "
+        if self.auto:
+            info += self.auto.modelo
+        else:
+            info += "No asignado"
+        info += "\n"
+        return info
 
 
 

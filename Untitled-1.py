@@ -91,7 +91,7 @@ class Empleado:
         if type(value) not in [int, float] or value <= 0:
             raise Error("El salario debe ser un número positivo.")
         self._salario = value
-
+#
 
 
 
@@ -146,9 +146,13 @@ class Piloto(Empleado):
 
 
 
-class DirectorEquipo(Empleado):
-    # No additional attributes for now
-    pass
+class DirectorEquipo:
+    def __init__(self, id, nombre, fecha_nacimiento, nacionalidad, salario):
+        self.id = id
+        self.nombre = nombre
+        self.fecha_nacimiento = fecha_nacimiento
+        self.nacionalidad = nacionalidad
+        self.salario = salario
 
 
 
@@ -216,6 +220,7 @@ class Auto:
         except ValueError:
             raise Error("El score debe ser un número entero válido.")
         
+
 
 
 class Equipo:

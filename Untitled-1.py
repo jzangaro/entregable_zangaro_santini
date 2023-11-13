@@ -1,4 +1,10 @@
 
+class MenuNoValido (Exception):
+    def __init__ (self, opcion, mensaje = "Opcion de menu no valida"):
+        self.opcion = opcion
+        self.mensaje = mensaje
+        super().__init__(self.mensaje)
+
 
 # Clase Base 
 class Empleado:
@@ -223,7 +229,6 @@ class Auto:
             raise ValueError("El score debe ser un número entero válido.")
         
 
-
 # Equipos
 class Equipo:
     def __init__(self, nombre):
@@ -251,18 +256,8 @@ class Equipo:
         return info
 
 
-
-def obtener_pilotos(pilotos):
-    pass
-
-
-
-def simular_carrera (pilotos):
-    pass
-       
-
-
-def menu_principal (self):
+# Menu
+def menu_principal ():
 
      while True:
         print("MENU PRINCIPAL")
@@ -276,21 +271,29 @@ def menu_principal (self):
         opcion = int(input ("Ingrese una opción: "))
 
         if opcion == 1:
-            self.alta.empleado()
+            alta_empleado()
         elif opcion == 2:
-            self.alta.auto()
+            alta_auto()
         elif opcion == 3:
-            self.alta.equipo()
+            alta_equipo()
         elif opcion == 4:
             pass
         elif opcion == 5:
-            pass
+            realizar_consultas()
         elif opcion == 6:
-            pass
-
+            print(" Finalizando programa...")
+            break
+        else: 
+            raise MenuNoValido (opcion)
         
 
-def alta_empleado(self):
+# Consultas
+def realizar_consultas ():
+    pass
+
+
+# Altas
+def alta_empleado():
 
         id_empleado = input ("Ingrese su cedula: ")
         nombre = input ("Ingrese su nombre: ")
@@ -327,7 +330,7 @@ def alta_empleado(self):
 
 
 
-def alta_auto (self):
+def alta_auto ():
         modelo = input("Ingrese modelo del auto: ")
         anio = int(input("Ingrese año del auto: "))
         score = int(input(" Ingrese el score del auto: "))
@@ -336,7 +339,7 @@ def alta_auto (self):
 
 
 
-def alta_equipo (self):
+def alta_equipo ():
         nombre_equipo = input ("Ingrese nombre del equipo: ")
         equipo = Equipo(nombre_equipo)
 
@@ -352,8 +355,16 @@ def alta_equipo (self):
         return equipo
 
 
-    
+# Simulador de carrera
+def SimuladorCarrera():
+    pass
 
+
+# Main
+if __name__ == "__main__ ":
+    menu_principal()
+
+    
 
 
 

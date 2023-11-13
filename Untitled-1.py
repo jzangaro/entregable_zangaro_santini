@@ -1,10 +1,6 @@
 
 
-
-class Error (Exception):
-    pass
-
-
+# Clase Base 
 class Empleado:
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
         self.id_empleado = id_empleado
@@ -23,11 +19,11 @@ class Empleado:
     @id_empleado.setter
     def id_empleado(self, value):
         if len(value) != 8:
-            raise Error("El ID del empleado debe tener exactamente 8 dígitos.")
+            raise ValueError("El ID del empleado debe tener exactamente 8 dígitos.")
 
         for i in value:
             if i < '0' or i > '9':
-                raise Error("El ID del empleado debe contener solo números del 0 al 9.")
+                raise ValueError("El ID del empleado debe contener solo números del 0 al 9.")
         
         self._id_empleado = value
 
@@ -41,7 +37,7 @@ class Empleado:
     @nombre.setter
     def nombre(self, value):
         if not value:  
-            raise Error("El nombre no puede estar vacío.")
+            raise ValueError("El nombre no puede estar vacío.")
         self._nombre = value
 
 
@@ -62,10 +58,10 @@ class Empleado:
             if not (len(dia) == 2 and all(char in '0123456789' for char in dia) and 
                     len(mes) == 2 and all(char in '0123456789' for char in mes) and
                     len(año) == 4 and all(char in '0123456789' for char in año)):
-                raise Error("Fecha de nacimiento debe estar en formato DD/MM/AAAA y ser válida.")
+                raise ValueError("Fecha de nacimiento debe estar en formato DD/MM/AAAA y ser válida.")
             self._fecha_nacimiento = value
         else:
-            raise Error("Fecha de nacimiento debe estar en formato DD/MM/AAAA.")
+            raise ValueError("Fecha de nacimiento debe estar en formato DD/MM/AAAA.")
         
 
 
@@ -77,7 +73,7 @@ class Empleado:
     @nacionalidad.setter
     def nacionalidad(self, value):
         if not value:
-            raise Error("La nacionalidad no puede estar vacía.")
+            raise ValueError("La nacionalidad no puede estar vacía.")
         self._nacionalidad = value
 
 
@@ -89,12 +85,12 @@ class Empleado:
     @salario.setter
     def salario(self, value):
         if type(value) not in [int, float] or value <= 0:
-            raise Error("El salario debe ser un número positivo.")
+            raise ValueError("El salario debe ser un número positivo.")
         self._salario = value
-#
 
 
 
+# Pilotos
 class Piloto(Empleado):
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
@@ -117,7 +113,7 @@ class Piloto(Empleado):
         if 1 <= value <= 99:
             self._score = value
         else:
-            raise Error("El score debe ser un número entero entre 1 y 99.")
+            raise ValueError("El score debe ser un número entero entre 1 y 99.")
 
 
 
@@ -133,19 +129,19 @@ class Piloto(Empleado):
         value_str = str(value)
         for char in value_str:
             if char not in '0123456789':
-                raise Error("El número de auto debe ser un número entero positivo.")
+                raise ValueError("El número de auto debe ser un número entero positivo.")
 
         # Si todos los caracteres son dígitos, convertir a entero y verificar si es positivo
 
         numero = int(value_str)
         if numero <= 0:
-            raise Error("El número de auto debe ser un número entero positivo.")
+            raise ValueError("El número de auto debe ser un número entero positivo.")
 
         self._numero_auto = numero
 
 
 
-
+# Directores de equipo
 class DirectorEquipo:
     def __init__(self, id, nombre, fecha_nacimiento, nacionalidad, salario):
         self.id = id
@@ -156,7 +152,7 @@ class DirectorEquipo:
 
 
 
-
+# Mecanicos 
 class Mecanico(Empleado):
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
@@ -170,12 +166,18 @@ class Mecanico(Empleado):
     def score(self, value):
         score_int = int(value)
         if score_int < 1 or score_int > 99:
-            raise Error("El score debe ser un número entero entre 1 y 99.")
+            raise ValueError("El score debe ser un número entero entre 1 y 99.")
         self._score = score_int
 
 
 
+class JefeEquipo(Empleado):
+    def __init__ (self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
+        super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, "Jefe de Equipo")
 
+
+
+# Autos
 class Auto:
     def __init__(self, modelo, anio, score):
         self.modelo = modelo
@@ -189,7 +191,7 @@ class Auto:
     @modelo.setter
     def modelo(self, value):
         if not value or type(value) is not str:
-            raise Error("El modelo debe ser una cadena no vacía.")
+            raise ValueError("El modelo debe ser una cadena no vacía.")
         self._modelo = value
 
     @property
@@ -201,10 +203,10 @@ class Auto:
         try:
             anio_int = int(value)
             if anio_int < 1885 or anio_int > 2023:  # Rango de años válido
-                raise Error("El año debe ser un entero que represente un año válido de fabricación de autos.")
+                raise ValueError("El año debe ser un entero que represente un año válido de fabricación de autos.")
             self._anio = anio_int
         except ValueError:
-            raise Error("El año debe ser un número entero válido.")
+            raise ValueError("El año debe ser un número entero válido.")
 
     @property
     def score(self):
@@ -215,14 +217,14 @@ class Auto:
         try:
             score_int = int(value)
             if score_int < 1 or score_int > 99:  # Rango de score válido
-                raise Error("El score debe ser un número entero entre 1 y 99.")
+                raise ValueError("El score debe ser un número entero entre 1 y 99.")
             self._score = score_int
         except ValueError:
-            raise Error("El score debe ser un número entero válido.")
+            raise ValueError("El score debe ser un número entero válido.")
         
 
 
-
+# Equipos
 class Equipo:
     def __init__(self, nombre):
         self.nombre = nombre
@@ -250,6 +252,108 @@ class Equipo:
 
 
 
+def obtener_pilotos(pilotos):
+    pass
+
+
+
+def simular_carrera (pilotos):
+    pass
+       
+
+
+def menu_principal (self):
+
+     while True:
+        print("MENU PRINCIPAL")
+        print("1: Alta de Empleado ")
+        print("2: Alta de Auto ")
+        print("3: Alta de Equipo ")
+        print("4: Simular carrera")
+        print("5: Realizar consultas ")
+        print("6: Finalizar programa ")
+
+        opcion = int(input ("Ingrese una opción: "))
+
+        if opcion == 1:
+            self.alta.empleado()
+        elif opcion == 2:
+            self.alta.auto()
+        elif opcion == 3:
+            self.alta.equipo()
+        elif opcion == 4:
+            pass
+        elif opcion == 5:
+            pass
+        elif opcion == 6:
+            pass
+
+        
+
+def alta_empleado(self):
+
+        id_empleado = input ("Ingrese su cedula: ")
+        nombre = input ("Ingrese su nombre: ")
+        fecha_nacimiento = input("Ingrese su fecha de Nacimiento: ")
+        nacionalidad = input ("Ingrese su nacionalidad: ")
+        salario = float(input("Ingrese su salario: "))
+
+
+        print("")
+        print("Cargos: ")
+        print(" 1: Piloto ")
+        print( "2: Piloto de Reserva ")
+        print(" 3: Mecanico ")
+        print(" 4: Jefe de equipo ")
+        print("")
+
+        cargo = int(input("Ingrese su cargo "))
+
+        if cargo in [1,2]: 
+            # Piloto principal y de reserva 
+            score = int(input("Ingrese score: "))
+            numero_auto = int(input("Ingrese número de auto: "))
+            return Piloto (id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto)
+        elif cargo == 3: 
+            # Mecánico 
+            score = int(input("Ingrese score: "))
+            return Mecanico ((id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score))
+        elif cargo == 4: 
+            # Jefe de Equipo
+            return JefeEquipo ((id_empleado, nombre, fecha_nacimiento, nacionalidad, salario))
+        else:
+            print ("Cargo no disponible.")
+            return None 
+
+
+
+def alta_auto (self):
+        modelo = input("Ingrese modelo del auto: ")
+        anio = int(input("Ingrese año del auto: "))
+        score = int(input(" Ingrese el score del auto: "))
+
+        return Auto (modelo, anio, score)
+
+
+
+def alta_equipo (self):
+        nombre_equipo = input ("Ingrese nombre del equipo: ")
+        equipo = Equipo(nombre_equipo)
+
+        print("Datos del auto del equipo: ")
+        auto = alta_auto()
+        equipo.asignar_auto(auto)
+
+        for i in range (12):
+            empleado = alta_empleado()
+            if empleado:
+                equipo.agregar_empleado(empleado)
+        
+        return equipo
+
+
+    
+
 
 
 
@@ -261,7 +365,8 @@ class Equipo:
 
 
 
-       
 
 
-    
+
+
+

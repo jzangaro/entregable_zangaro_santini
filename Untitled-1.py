@@ -5,6 +5,11 @@ class MenuNoValido (Exception):
         self.mensaje = mensaje
         super().__init__(self.mensaje)
 
+class EntradaInvalida (Exception):
+    def __init__(self, mensaje = 'Entrada inválida, porfavor intentelo denuevo.')
+        self.mensaje = mensaje 
+        super().__init__(self.mensaje)
+
 
 # Clase Base 
 class Empleado:
@@ -94,8 +99,6 @@ class Empleado:
             raise ValueError("El salario debe ser un número positivo.")
         self._salario = value
 
-
-
 # Pilotos
 class Piloto(Empleado):
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto):
@@ -145,8 +148,6 @@ class Piloto(Empleado):
 
         self._numero_auto = numero
 
-
-
 # Directores de equipo
 class DirectorEquipo:
     def __init__(self, id, nombre, fecha_nacimiento, nacionalidad, salario):
@@ -155,8 +156,6 @@ class DirectorEquipo:
         self.fecha_nacimiento = fecha_nacimiento
         self.nacionalidad = nacionalidad
         self.salario = salario
-
-
 
 # Mecanicos 
 class Mecanico(Empleado):
@@ -175,13 +174,10 @@ class Mecanico(Empleado):
             raise ValueError("El score debe ser un número entero entre 1 y 99.")
         self._score = score_int
 
-
-
+# Jefes
 class JefeEquipo(Empleado):
     def __init__ (self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, "Jefe de Equipo")
-
-
 
 # Autos
 class Auto:
@@ -228,7 +224,6 @@ class Auto:
         except ValueError:
             raise ValueError("El score debe ser un número entero válido.")
         
-
 # Equipos
 class Equipo:
     def __init__(self, nombre):
@@ -256,10 +251,15 @@ class Equipo:
         return info
 
 
+
+
+
+
+
 # Menu
 def menu_principal ():
 
-     while True:
+    while True:
         print("MENU PRINCIPAL")
         print("1: Alta de Empleado ")
         print("2: Alta de Auto ")
@@ -268,7 +268,11 @@ def menu_principal ():
         print("5: Realizar consultas ")
         print("6: Finalizar programa ")
 
-        opcion = int(input ("Ingrese una opción: "))
+        
+        opcion = int(input("Ingrese una opción: "))
+
+        if opcion < 1 or opcion > 6:
+            raise EntradaInvalida()
 
         if opcion == 1:
             alta_empleado()
@@ -277,6 +281,7 @@ def menu_principal ():
         elif opcion == 3:
             alta_equipo()
         elif opcion == 4:
+            simuladorCarrera()
             pass
         elif opcion == 5:
             realizar_consultas()
@@ -286,10 +291,16 @@ def menu_principal ():
         else: 
             raise MenuNoValido (opcion)
         
+       
 
 # Consultas
 def realizar_consultas ():
     pass
+
+
+
+
+
 
 
 # Altas
@@ -328,16 +339,12 @@ def alta_empleado():
             print ("Cargo no disponible.")
             return None 
 
-
-
 def alta_auto ():
         modelo = input("Ingrese modelo del auto: ")
         anio = int(input("Ingrese año del auto: "))
         score = int(input(" Ingrese el score del auto: "))
 
         return Auto (modelo, anio, score)
-
-
 
 def alta_equipo ():
         nombre_equipo = input ("Ingrese nombre del equipo: ")
@@ -355,8 +362,13 @@ def alta_equipo ():
         return equipo
 
 
+
+
+
+
+
 # Simulador de carrera
-def SimuladorCarrera():
+def simuladorCarrera():
     pass
 
 

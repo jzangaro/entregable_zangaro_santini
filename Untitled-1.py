@@ -6,7 +6,7 @@ class MenuNoValido (Exception):
         super().__init__(self.mensaje)
 
 class EntradaInvalida (Exception):
-    def __init__(self, mensaje = 'Entrada inválida, porfavor intentelo denuevo.')
+    def __init__(self, mensaje = 'Entrada inválida, porfavor intentelo denuevo.'):
         self.mensaje = mensaje 
         super().__init__(self.mensaje)
 
@@ -14,11 +14,11 @@ class EntradaInvalida (Exception):
 # Clase Base 
 class Empleado:
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
-        self.id_empleado = id_empleado
-        self.nombre = nombre
-        self.fecha_nacimiento = fecha_nacimiento
-        self.nacionalidad = nacionalidad
-        self.salario = salario
+        self._id_empleado = id_empleado
+        self._nombre = nombre
+        self._fecha_nacimiento = fecha_nacimiento
+        self._nacionalidad = nacionalidad
+        self._salario = salario
 
 
 
@@ -103,10 +103,10 @@ class Empleado:
 class Piloto(Empleado):
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
-        self.score = score
-        self.numero_auto = numero_auto
-        self.puntaje_campeonato = 0
-        self.lesionado = False
+        self._score = score
+        self._numero_auto = numero_auto
+        self._puntaje_campeonato = 0
+        self._lesionado = False
 
 
 
@@ -151,17 +151,17 @@ class Piloto(Empleado):
 # Directores de equipo
 class DirectorEquipo:
     def __init__(self, id, nombre, fecha_nacimiento, nacionalidad, salario):
-        self.id = id
-        self.nombre = nombre
-        self.fecha_nacimiento = fecha_nacimiento
-        self.nacionalidad = nacionalidad
-        self.salario = salario
+        self._id = id
+        self._nombre = nombre
+        self._fecha_nacimiento = fecha_nacimiento
+        self._nacionalidad = nacionalidad
+        self._salario = salario
 
 # Mecanicos 
 class Mecanico(Empleado):
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
-        self.score = score
+        self._score = score
 
     @property
     def score(self):
@@ -182,9 +182,9 @@ class JefeEquipo(Empleado):
 # Autos
 class Auto:
     def __init__(self, modelo, anio, score):
-        self.modelo = modelo
-        self.anio = anio
-        self.score = score
+        self._modelo = modelo
+        self._anio = anio
+        self._score = score
 
     @property
     def modelo(self):
@@ -227,9 +227,9 @@ class Auto:
 # Equipos
 class Equipo:
     def __init__(self, nombre):
-        self.nombre = nombre
-        self.empleados = []
-        self.auto = None
+        self._nombre = nombre
+        self._empleados = []
+        self._auto = None
 
     def agregar_empleado(self, empleado):
         self.empleados.append(empleado)
@@ -252,8 +252,8 @@ class Equipo:
 
 
 
-
-
+los_equipos = []
+los_autos = []
 
 
 # Menu
@@ -299,24 +299,46 @@ def realizar_consultas ():
 
 
 
-
-
-
-
 # Altas
 def alta_empleado():
+        
+        while True:
+            try:
+                id_empleado = input ("Ingrese su cedula: ")
+                if len(id_empleado) != 8:
+                    raise EntradaInvalida
+                break
+            except EntradaInvalida:
+                print("La cedula no tiene la cantidad de digitos necesaria")
+            
 
-        id_empleado = input ("Ingrese su cedula: ")
         nombre = input ("Ingrese su nombre: ")
-        fecha_nacimiento = input("Ingrese su fecha de Nacimiento: ")
+
+        while True:
+            try:
+                fecha_nacimiento = input("Ingrese su fecha de Nacimiento: ")
+                partes = fecha_nacimiento.split('/')
+                if len(partes) != 3:
+                    raise EntradaInvalida
+                    
+                dia, mes, año = partes
+                if not (len(dia) == 2 and all (char in '0123456789' for char in dia) and 
+                         len(mes) == 2 and all (char in '0123456789' for char in mes) and 
+                         len(año) == 2 and all (char in '0123456789' for char in año)):
+                        raise EntradaInvalida
+                break
+            except EntradaInvalida as e:
+                print (e)
+
         nacionalidad = input ("Ingrese su nacionalidad: ")
+
         salario = float(input("Ingrese su salario: "))
 
 
         print("")
         print("Cargos: ")
         print(" 1: Piloto ")
-        print( "2: Piloto de Reserva ")
+        print(" 2: Piloto de Reserva ")
         print(" 3: Mecanico ")
         print(" 4: Jefe de equipo ")
         print("")
@@ -344,7 +366,10 @@ def alta_auto ():
         anio = int(input("Ingrese año del auto: "))
         score = int(input(" Ingrese el score del auto: "))
 
-        return Auto (modelo, anio, score)
+        auto = Auto (modelo, anio, score)
+        los_autos.append(auto)
+
+        return auto
 
 def alta_equipo ():
         nombre_equipo = input ("Ingrese nombre del equipo: ")
@@ -358,6 +383,8 @@ def alta_equipo ():
             empleado = alta_empleado()
             if empleado:
                 equipo.agregar_empleado(empleado)
+
+        los_equipos.append(equipo)
         
         return equipo
 
@@ -373,8 +400,13 @@ def simuladorCarrera():
 
 
 # Main
-if __name__ == "__main__ ":
-    menu_principal()
+menu_principal()
+
+
+
+
+
+
 
     
 

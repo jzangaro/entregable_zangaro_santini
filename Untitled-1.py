@@ -11,6 +11,7 @@ class EntradaInvalida (Exception):
         super().__init__(self.mensaje)
 
 
+
 # Clase Base 
 class Empleado:
     def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
@@ -19,6 +20,7 @@ class Empleado:
         self._fecha_nacimiento = fecha_nacimiento
         self._nacionalidad = nacionalidad
         self._salario = salario
+     
 
 
 
@@ -101,12 +103,13 @@ class Empleado:
 
 # Pilotos
 class Piloto(Empleado):
-    def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto):
+    def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto, es_reserva = False):
         super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
         self._score = score
         self._numero_auto = numero_auto
         self._puntaje_campeonato = 0
         self._lesionado = False
+        self._es_reserva = es_reserva
 
 
 
@@ -232,19 +235,19 @@ class Equipo:
         self._auto = None
 
     def agregar_empleado(self, empleado):
-        self.empleados.append(empleado)
+        self._empleados.append(empleado)
 
     def asignar_auto(self, auto):
-        self.auto = auto
+        self._auto = auto
 
     def obtener_informacion(self):
         info = "Equipo: " + self.nombre + "\n"
         info += "Empleados:\n"
-        for empleado in self.empleados:
+        for empleado in self._empleados:
             info += " - " + empleado.nombre + "\n"
         info += "Auto: "
         if self.auto:
-            info += self.auto.modelo
+            info += self._auto.modelo
         else:
             info += "No asignado"
         info += "\n"
@@ -252,52 +255,63 @@ class Equipo:
 
 
 
+
+
+los_empleados = []
 los_equipos = []
 los_autos = []
+
+
+
+
 
 
 # Menu
 def menu_principal ():
 
     while True:
-        print("MENU PRINCIPAL")
-        print("1: Alta de Empleado ")
-        print("2: Alta de Auto ")
-        print("3: Alta de Equipo ")
-        print("4: Simular carrera")
-        print("5: Realizar consultas ")
-        print("6: Finalizar programa ")
+        try:
+
+         print("---------------------")
+         print("MENU PRINCIPAL")
+         print("1: Alta de Empleado ")
+         print("2: Alta de Auto ")
+         print("3: Alta de Equipo ")
+         print("4: Simular carrera")
+         print("5: Realizar consultas ")
+         print("6: Finalizar programa ")
+         print("---------------------")
 
         
-        opcion = int(input("Ingrese una opción: "))
+         opcion = int(input("Ingrese una opción: "))
 
-        if opcion < 1 or opcion > 6:
-            raise EntradaInvalida()
+         if opcion < 1 or opcion > 6:
+             raise EntradaInvalida()
+ 
+         if opcion == 1:
+             alta_empleado()
+         elif opcion == 2:
+             alta_auto()
+         elif opcion == 3:
+             alta_equipo()
+         elif opcion == 4:
+             simuladorCarrera()
+             pass
+         elif opcion == 5:
+             realizar_consultas()
+         elif opcion == 6:
+             print(" Finalizando programa...")
+             break
+         
 
-        if opcion == 1:
-            alta_empleado()
-        elif opcion == 2:
-            alta_auto()
-        elif opcion == 3:
-            alta_equipo()
-        elif opcion == 4:
-            simuladorCarrera()
-            pass
-        elif opcion == 5:
-            realizar_consultas()
-        elif opcion == 6:
-            print(" Finalizando programa...")
-            break
-        else: 
-            raise MenuNoValido (opcion)
-        
+        except EntradaInvalida:
+            print("Por favor, ingrese un número válido.")
+        except MenuNoValido as e:
+            print(f"Error: {e}. Por favor, elija una opción válida.")
        
-
 # Consultas
 def realizar_consultas ():
     pass
-
-
 
 # Altas
 def alta_empleado():
@@ -320,15 +334,18 @@ def alta_empleado():
                 partes = fecha_nacimiento.split('/')
                 if len(partes) != 3:
                     raise EntradaInvalida
-                    
-                dia, mes, año = partes
-                if not (len(dia) == 2 and all (char in '0123456789' for char in dia) and 
-                         len(mes) == 2 and all (char in '0123456789' for char in mes) and 
-                         len(año) == 2 and all (char in '0123456789' for char in año)):
-                        raise EntradaInvalida
+                
+                dia, mes, year = partes
+                if not (len(dia) == 2 and len(mes) == 2 and len(year) == 4):
+                    raise EntradaInvalida
+                
+                if not all (char in '0123456789' for char in dia+mes+year):
+                    raise EntradaInvalida
+                
                 break
+
             except EntradaInvalida as e:
-                print (e)
+                print(e)
 
         nacionalidad = input ("Ingrese su nacionalidad: ")
 
@@ -349,7 +366,8 @@ def alta_empleado():
             # Piloto principal y de reserva 
             score = int(input("Ingrese score: "))
             numero_auto = int(input("Ingrese número de auto: "))
-            return Piloto (id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto)
+            es_reserva = cargo == 2
+            return Piloto (id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto, es_reserva)
         elif cargo == 3: 
             # Mecánico 
             score = int(input("Ingrese score: "))
@@ -364,7 +382,7 @@ def alta_empleado():
 def alta_auto ():
         modelo = input("Ingrese modelo del auto: ")
         anio = int(input("Ingrese año del auto: "))
-        score = int(input(" Ingrese el score del auto: "))
+        score = int(input("Ingrese el score del auto: "))
 
         auto = Auto (modelo, anio, score)
         los_autos.append(auto)
@@ -375,24 +393,19 @@ def alta_equipo ():
         nombre_equipo = input ("Ingrese nombre del equipo: ")
         equipo = Equipo(nombre_equipo)
 
+       # Asignar auto al equipo
         print("Datos del auto del equipo: ")
         auto = alta_auto()
         equipo.asignar_auto(auto)
 
+        # Crear  y agregar empleados al equipo
         for i in range (12):
             empleado = alta_empleado()
             if empleado:
                 equipo.agregar_empleado(empleado)
 
         los_equipos.append(equipo)
-        
         return equipo
-
-
-
-
-
-
 
 # Simulador de carrera
 def simuladorCarrera():
@@ -401,27 +414,4 @@ def simuladorCarrera():
 
 # Main
 menu_principal()
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
 

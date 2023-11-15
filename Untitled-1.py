@@ -1,3 +1,4 @@
+
 class MenuNoValido (Exception):
     def __init__ (self, opcion, mensaje = "Opcion de menu no valida"):
         self.opcion = opcion
@@ -15,62 +16,47 @@ class Empleado:
         self._fecha_nac = fecha_nac
         self._nacionalidad = nacionalidad
         self._salario = salario
-        self.tipo = tipo  # Añadido el atributo tipo
+        self._tipo = tipo
 
-        @property
-        def id(self):
-            return self._id
-        
-        @property
-        def nombre(self):
-            return self._nombre
-        
-        @property
-        def salario(self):
-            return self._salario
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def nombre(self):
+        return self._nombre
+
+    @property
+    def salario(self):
+        return self._salario
+
         
 class Piloto(Empleado):
-    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score, numero_auto, puntaje_campeonato=0, esta_lesionado=False, es_titular = True):
+    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score, numero_auto, puntaje_campeonato=0, esta_lesionado=False, es_titular=True):
         super().__init__(id, nombre, fecha_nac, nacionalidad, salario, 'piloto')
-        self.id = id
-        self.es_titular = es_titular
-        self.nombre = nombre
-        self._fecha_nac = fecha_nac
-        self._nacionalidad = nacionalidad
-        self._salario = salario
         self.score = score
         self.numero_auto = numero_auto
         self.puntaje_campeonato = puntaje_campeonato
         self.esta_lesionado = esta_lesionado
+        self.es_titular = es_titular
         self.equipo = None
-
-        # Los siguientes atributos se inicializan aquí pero podrían ser asignados durante la simulación de la carrera
         self.abandonó = False
         self.errores_en_pits = 0
         self.penalidades = 0
         self.score_final = 0
         self.puntos_carrera = 0
+
  
         
 
 class Mecanico(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score):
         super().__init__(id, nombre, fecha_nac, nacionalidad, salario, 'mecanico')
-        self.id = id
-        self.nombre = nombre
-        self._fecha_nac = fecha_nac
-        self._nacionalidad = nacionalidad
-        self._salario = salario
         self.score = score
 
 class Director(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario):
         super().__init__(id, nombre, fecha_nac, nacionalidad, salario, 'director')
-        self.id = id
-        self.nombre = nombre
-        self._fecha_nac = fecha_nac
-        self._nacionalidad = nacionalidad
-        self._salario = salario
 
 class Auto:
      def __init__(self, modelo, anio, score):
@@ -268,7 +254,7 @@ def obtener_pilotos_para_carrera(equipos):
     return pilotos_en_carrera
 
 def registrar_imprevistos(pilotos):
-    # Falta esto
+    # ni idea aca
     pass
 
 def calcular_scores(pilotos):
@@ -350,13 +336,19 @@ def main():
     equipos = []
 
 
-    # Equipo aleatorio para probar codigo
+
+
+
+
+    # Crear y añadir el auto
     auto_prueba = Auto("Modelo2023", 2023, 90)
     autos[auto_prueba.modelo] = auto_prueba
+    # Crear y añadir los pilotos y el jefe de equipo
     empleados["12345678"] = Piloto("12345678", "Piloto Uno", "01/01/1990", "Nacionalidad1", 100000, 95, 1, 0, False, True)
     empleados["87654321"] = Piloto("87654321", "Piloto Dos", "02/02/1992", "Nacionalidad2", 95000, 92, 2, 0, True, True)
     empleados["11223344"] = Piloto("11223344", "Piloto Reserva", "03/03/1993", "Nacionalidad3", 90000, 90, 3, 0, False, False)
     empleados["44332211"] = Director("44332211", "Jefe Uno", "04/04/1980", "Nacionalidad4", 120000)
+    # Crear y añadir los mecánicos
     for i in range(1, 9):
         cedula = f"1111{str(i).zfill(4)}"
         nombre = f"Mecanico {i}"
@@ -365,6 +357,7 @@ def main():
         salario = 50000 + i * 2000
         score = 85 + i
         empleados[cedula] = Mecanico(cedula, nombre, fecha_nac, nacionalidad, salario, score)
+    # Crear y añadir el equipo
     equipo_prueba = Equipo("Equipo Prueba")
     equipo_prueba.asignar_auto(autos["Modelo2023"])
     equipo_prueba.asignar_director(empleados["44332211"])
@@ -375,6 +368,82 @@ def main():
         equipo_prueba.agregar_mecanico(empleados[cedula])
     equipos.append(equipo_prueba)
 
+            
+            
+            # Continuación de tu código existente...
+
+# Crear y añadir más autos
+    autos["Modelo2024"] = Auto("Modelo2024", 2024, 88)
+    autos["Modelo2025"] = Auto("Modelo2025", 2025, 92)
+    autos["Modelo2026"] = Auto("Modelo2026", 2026, 95)
+
+# Crear y añadir más pilotos, directores y mecánicos
+# Equipo 2
+    empleados["22334455"] = Piloto("22334455", "Piloto Tres", "05/05/1991", "Nacionalidad5", 98000, 93, 4, 0, False, True)
+    empleados["55667788"] = Piloto("55667788", "Piloto Cuatro", "06/06/1994", "Nacionalidad6", 96000, 91, 5, 0, False, True)
+    empleados["88990011"] = Piloto("88990011", "Piloto Reserva 2", "07/07/1995", "Nacionalidad7", 88000, 89, 6, 0, False, False)
+    empleados["11224433"] = Director("11224433", "Jefe Dos", "08/08/1981", "Nacionalidad8", 115000)
+
+    # Equipo 3
+    empleados["33445566"] = Piloto("33445566", "Piloto Cinco", "09/09/1992", "Nacionalidad9", 97000, 94, 7, 0, True, True)
+    empleados["66778899"] = Piloto("66778899", "Piloto Seis", "10/10/1996", "Nacionalidad10", 95000, 90, 8, 0, False, True)
+    empleados["99001122"] = Piloto("99001122", "Piloto Reserva 3", "11/11/1997", "Nacionalidad11", 87000, 88, 9, 0, False, False)
+    empleados["22446688"] = Director("22446688", "Jefe Tres", "12/12/1982", "Nacionalidad12", 110000)
+
+    # Equipo 4
+    empleados["77889900"] = Piloto("77889900", "Piloto Siete", "13/13/1993", "Nacionalidad13", 99000, 99, 10, 0, False, True)
+    empleados["00112233"] = Piloto("00112233", "Piloto Ocho", "14/14/1998", "Nacionalidad14", 94000, 89, 11, 0, True, True)
+    empleados["44556677"] = Piloto("44556677", "Piloto Reserva 4", "15/15/1999", "Nacionalidad15", 86000, 87, 12, 0, False, False)
+    empleados["33669900"] = Director("33669900", "Jefe Cuatro", "16/16/1983", "Nacionalidad16", 105000)
+
+    # Añadir más mecánicos
+    for i in range(9, 17):
+        cedula = f"2222{str(i).zfill(4)}"
+        nombre = f"Mecanico {i}"
+        fecha_nac = f"2{i}/2{i}/19{i}"
+        nacionalidad = f"Nacionalidad{i+8}"
+        salario = 48000 + i * 2000
+        score = 80 + i
+        empleados[cedula] = Mecanico(cedula, nombre, fecha_nac, nacionalidad, salario, score)
+
+    # Crear y añadir más equipos
+    # Equipo 2
+    equipo2 = Equipo("Equipo Prueba 2")
+    equipo2.asignar_auto(autos["Modelo2024"])
+    equipo2.asignar_director(empleados["11224433"])
+    for cedula in ["22334455", "55667788", "88990011"]:
+        equipo2.agregar_piloto(empleados[cedula])
+    for i in range(9, 17):
+        cedula = f"2222{str(i).zfill(4)}"
+        equipo2.agregar_mecanico(empleados[cedula])
+    equipos.append(equipo2)
+
+    # Equipo 3
+    equipo3 = Equipo("Equipo Prueba 3")
+    equipo3.asignar_auto(autos["Modelo2025"])
+    equipo3.asignar_director(empleados["22446688"])
+    for cedula in ["33445566", "66778899", "99001122"]:
+        equipo3.agregar_piloto(empleados[cedula])
+    for i in range(9, 17):
+        cedula = f"2222{str(i).zfill(4)}"
+        equipo3.agregar_mecanico(empleados[cedula])
+    equipos.append(equipo3)
+
+    # Equipo 4
+    equipo4 = Equipo("Equipo Prueba 4")
+    equipo4.asignar_auto(autos["Modelo2026"])
+    equipo4.asignar_director(empleados["33669900"])
+    for cedula in ["77889900", "00112233", "44556677"]:
+        equipo4.agregar_piloto(empleados[cedula])
+    for i in range(9, 17):
+        cedula = f"2222{str(i).zfill(4)}"
+        equipo4.agregar_mecanico(empleados[cedula])
+    equipos.append(equipo4)
+
+    # Continuación de tu método main()...
+
+            
+            
 
     while True:
         print("1. Alta de empleado")
@@ -415,12 +484,14 @@ def main():
             print(resultados_carrera)
         elif opcion_usuario == 5:
             consultas(equipos)
-            print("Realizar consultas")
+            print("Realizar consultas (Función aún no implementada).")
         elif opcion_usuario == 6:
             print("Finalizando programa...")
             break
         else:
             print("Opción no válida. Intente nuevamente.")
+
+
 
 if __name__ == "__main__":
     main()

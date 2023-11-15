@@ -1,4 +1,5 @@
 
+
 class MenuNoValido (Exception):
     def __init__ (self, opcion, mensaje = "Opcion de menu no valida"):
         self.opcion = opcion
@@ -10,408 +11,210 @@ class EntradaInvalida (Exception):
         self.mensaje = mensaje 
         super().__init__(self.mensaje)
 
-
-
-# Clase Base 
 class Empleado:
-    def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
-        self._id_empleado = id_empleado
-        self._nombre = nombre
-        self._fecha_nacimiento = fecha_nacimiento
-        self._nacionalidad = nacionalidad
-        self._salario = salario
-     
-
-
-
-
-    @property
-    def id_empleado(self):
-        return self._id_empleado
-
-    @id_empleado.setter
-    def id_empleado(self, value):
-        if len(value) != 8:
-            raise ValueError("El ID del empleado debe tener exactamente 8 dígitos.")
-
-        for i in value:
-            if i < '0' or i > '9':
-                raise ValueError("El ID del empleado debe contener solo números del 0 al 9.")
-        
-        self._id_empleado = value
-
-
-
-
-    @property
-    def nombre(self):
-        return self._nombre
-
-    @nombre.setter
-    def nombre(self, value):
-        if not value:  
-            raise ValueError("El nombre no puede estar vacío.")
-        self._nombre = value
-
-
-
-
-    @property
-    def fecha_nacimiento(self):
-        return self._fecha_nacimiento
-
-    @fecha_nacimiento.setter
-    def fecha_nacimiento(self, value):
-
-        # Se espera que el formato de la fecha sea DD/MM/AAAA.
-
-        partes = value.split('/')
-        if len(partes) == 3:
-            dia, mes, año = partes
-            if not (len(dia) == 2 and all(char in '0123456789' for char in dia) and 
-                    len(mes) == 2 and all(char in '0123456789' for char in mes) and
-                    len(año) == 4 and all(char in '0123456789' for char in año)):
-                raise ValueError("Fecha de nacimiento debe estar en formato DD/MM/AAAA y ser válida.")
-            self._fecha_nacimiento = value
-        else:
-            raise ValueError("Fecha de nacimiento debe estar en formato DD/MM/AAAA.")
-        
-
-
-
-    @property
-    def nacionalidad(self):
-        return self._nacionalidad
-
-    @nacionalidad.setter
-    def nacionalidad(self, value):
-        if not value:
-            raise ValueError("La nacionalidad no puede estar vacía.")
-        self._nacionalidad = value
-
-
-
-    @property
-    def salario(self):
-        return self._salario
-
-    @salario.setter
-    def salario(self, value):
-        if type(value) not in [int, float] or value <= 0:
-            raise ValueError("El salario debe ser un número positivo.")
-        self._salario = value
-
-# Pilotos
-class Piloto(Empleado):
-    def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto, es_reserva = False):
-        super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
-        self._score = score
-        self._numero_auto = numero_auto
-        self._puntaje_campeonato = 0
-        self._lesionado = False
-        self._es_reserva = es_reserva
-
-
-
-
-
-
-    @property
-    def score(self):
-        return self._score
-
-    @score.setter
-    def score(self, value):
-        if 1 <= value <= 99:
-            self._score = value
-        else:
-            raise ValueError("El score debe ser un número entero entre 1 y 99.")
-
-
-
-
-
-
-    @property
-    def numero_auto(self):
-        return self._numero_auto
-
-    @numero_auto.setter
-    def numero_auto(self, value):
-        value_str = str(value)
-        for char in value_str:
-            if char not in '0123456789':
-                raise ValueError("El número de auto debe ser un número entero positivo.")
-
-        # Si todos los caracteres son dígitos, convertir a entero y verificar si es positivo
-
-        numero = int(value_str)
-        if numero <= 0:
-            raise ValueError("El número de auto debe ser un número entero positivo.")
-
-        self._numero_auto = numero
-
-# Directores de equipo
-class DirectorEquipo:
-    def __init__(self, id, nombre, fecha_nacimiento, nacionalidad, salario):
+    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario):
         self._id = id
         self._nombre = nombre
-        self._fecha_nacimiento = fecha_nacimiento
+        self._fecha_nac = fecha_nac
         self._nacionalidad = nacionalidad
         self._salario = salario
 
-# Mecanicos 
-class Mecanico(Empleado):
-    def __init__(self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score):
-        super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario)
+class Piloto (Empleado):
+    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score, numero_auto, puntaje_campeonato, esta_lesionado):
+        super().__init__(self, id, nombre, fecha_nac, nacionalidad, salario, 'piloto')
+        self._score = score
+        self._numero_auto = numero_auto
+        self._puntaje_campeonato = puntaje_campeonato
+        self._esta_lesionado = esta_lesionado
+
+class Mecanico (Empleado):
+    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score):
+        super().__init__(self, id, nombre, fecha_nac, nacionalidad, salario, 'mecanico')
         self._score = score
 
-    @property
-    def score(self):
-        return self._score
+class Director(Empleado):
+    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario):
+        super().__init__(self, id, nombre, fecha_nac, nacionalidad, salario, 'director')
 
-    @score.setter
-    def score(self, value):
-        score_int = int(value)
-        if score_int < 1 or score_int > 99:
-            raise ValueError("El score debe ser un número entero entre 1 y 99.")
-        self._score = score_int
-
-# Jefes
-class JefeEquipo(Empleado):
-    def __init__ (self, id_empleado, nombre, fecha_nacimiento, nacionalidad, salario):
-        super().__init__(id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, "Jefe de Equipo")
-
-# Autos
 class Auto:
     def __init__(self, modelo, anio, score):
         self._modelo = modelo
         self._anio = anio
         self._score = score
-
-    @property
-    def modelo(self):
-        return self._modelo
-
-    @modelo.setter
-    def modelo(self, value):
-        if not value or type(value) is not str:
-            raise ValueError("El modelo debe ser una cadena no vacía.")
-        self._modelo = value
-
-    @property
-    def anio(self):
-        return self._anio
-
-    @anio.setter
-    def anio(self, value):
-        try:
-            anio_int = int(value)
-            if anio_int < 1885 or anio_int > 2023:  # Rango de años válido
-                raise ValueError("El año debe ser un entero que represente un año válido de fabricación de autos.")
-            self._anio = anio_int
-        except ValueError:
-            raise ValueError("El año debe ser un número entero válido.")
-
-    @property
-    def score(self):
-        return self._score
-
-    @score.setter
-    def score(self, value):
-        try:
-            score_int = int(value)
-            if score_int < 1 or score_int > 99:  # Rango de score válido
-                raise ValueError("El score debe ser un número entero entre 1 y 99.")
-            self._score = score_int
-        except ValueError:
-            raise ValueError("El score debe ser un número entero válido.")
         
-# Equipos
 class Equipo:
     def __init__(self, nombre):
-        self._nombre = nombre
+        self.nombre = nombre
         self._empleados = []
-        self._auto = None
+        self._pilotos = []
+        self._director = None
+        self._modelo_auto = None 
 
-    def agregar_empleado(self, empleado):
-        self._empleados.append(empleado)
+    def agregar_piloto(self, piloto):
+        self.pilotos.append(piloto)
+
+    def agregar_mecanico(self, mecanico):
+        self.mecanicos.append(mecanico)
+
+    def asignar_director(self, director):
+        self.director = director
 
     def asignar_auto(self, auto):
-        self._auto = auto
+        self.auto = auto
 
-    def obtener_informacion(self):
-        info = "Equipo: " + self.nombre + "\n"
-        info += "Empleados:\n"
-        for empleado in self._empleados:
-            info += " - " + empleado.nombre + "\n"
-        info += "Auto: "
-        if self.auto:
-            info += self._auto.modelo
+
+
+def alta_empleado():
+    cedula = input("Ingrese cedula: ")
+    nombre = input("Ingrese nombre: ")
+    fecha_nacimiento = input("Ingrese fecha de nacimiento (DD/MM/AAAA): ")
+    nacionalidad = input("Ingrese nacionalidad: ")
+    salario = float(input("Ingrese salario: "))
+    cargo = int(input("Ingrese cargo (1: Piloto, 2: Piloto de reserva, 3: Mecánico, 4: Jefe de equipo): "))
+
+    if cargo in [1, 2]:  # Piloto o Piloto de reserva
+        score = int(input("Ingrese score: "))
+        numero_auto = int(input("Ingrese número de auto: "))
+        return Piloto(cedula, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto, 0, False)
+    elif cargo == 3:  # Mecánico
+        score = int(input("Ingrese score: "))
+        return Mecanico(cedula, nombre, fecha_nacimiento, nacionalidad, salario, score)
+    elif cargo == 4:  # Jefe de equipo
+        return Director(cedula, nombre, fecha_nacimiento, nacionalidad, salario)
+    else:
+        print("Cargo no válido.")
+        return None
+
+def alta_auto():
+    modelo = input("Ingrese modelo: ")
+    anio = int(input("Ingrese año: "))
+    score = int(input("Ingrese score: "))
+    return Auto(modelo, anio, score)
+
+def alta_equipo(empleados, autos):
+    nombre_equipo = input("Ingrese nombre del equipo: ")
+    modelo_auto = input("Ingrese modelo de auto: ")
+
+    equipo = Equipo(nombre_equipo)
+    if modelo_auto in autos:
+        equipo.asignar_auto(autos[modelo_auto])
+    else:
+        print("Modelo de auto no encontrado.")
+        return None
+
+    for _ in range(12):
+        cedula_empleado = input("Ingrese cedula del empleado: ")
+        if cedula_empleado in empleados:
+            empleado = empleados[cedula_empleado]
+            if empleado.tipo == "piloto":
+                equipo.agregar_piloto(empleado)
+            elif empleado.tipo == "mecanico":
+                equipo.agregar_mecanico(empleado)
+            elif empleado.tipo == "director":
+                equipo.asignar_director(empleado)
         else:
-            info += "No asignado"
-        info += "\n"
-        return info
+            print("Empleado no encontrado.")
+
+    return equipo
+
+def consultas(equipos):
+    while True:
+        print("\nConsultas Disponibles:")
+        print("1. Top 10 pilotos con más puntos en el campeonato")
+        print("2. Resumen campeonato de constructores (equipos)")
+        print("3. Top 5 pilotos mejores pagos")
+        print("4. Top 3 pilotos más hábiles")
+        print("5. Retornar jefes de equipo")
+        print("6. Volver al menú principal")
+
+        opcion = int(input("Seleccione una consulta: "))
+
+        if opcion == 1:
+         top_pilotos_puntos(equipos)
+        elif opcion == 2:
+         resumen_constructores(equipos)
+        elif opcion == 3:
+         top_pilotos_salario(equipos)
+        elif opcion == 4:
+         top_pilotos_habilidosos(equipos)
+        elif opcion == 5:
+         jefes_equipo(equipos)
+        else:
+         raise EntradaInvalida
+
+def simular_Carrera():
+    pass
+
+
+def top_pilotos_puntos(equipos):
+    pass
+
+def resumen_constructores (equipos):
+    pass
+
+def top_pilotos_salario(equipos):
+    pass
+
+def top_pilotos_habilidosos(equipos):
+    pass
+
+def jefes_equipo(equipos):
+    pass
 
 
 
-
-
-los_empleados = []
-los_equipos = []
-los_autos = []
-
-
-
-
-
-
-# Menu
-def menu_principal ():
+def main():
+    empleados = {}
+    autos = {}
+    equipos = []
 
     while True:
-        try:
+        print("1. Alta de empleado")
+        print("2. Alta de auto")
+        print("3. Alta de equipo")
+        print("4. Simular carrera")
+        print("5. Realizar consultas")
+        print("6. Finalizar programa")
 
-         print("---------------------")
-         print("MENU PRINCIPAL")
-         print("1: Alta de Empleado ")
-         print("2: Alta de Auto ")
-         print("3: Alta de Equipo ")
-         print("4: Simular carrera")
-         print("5: Realizar consultas ")
-         print("6: Finalizar programa ")
-         print("---------------------")
-
-        
-         opcion = int(input("Ingrese una opción: "))
-
-         if opcion < 1 or opcion > 6:
-             raise EntradaInvalida()
- 
-         if opcion == 1:
-             alta_empleado()
-         elif opcion == 2:
-             alta_auto()
-         elif opcion == 3:
-             alta_equipo()
-         elif opcion == 4:
-             simuladorCarrera()
-             pass
-         elif opcion == 5:
-             realizar_consultas()
-         elif opcion == 6:
-             print(" Finalizando programa...")
-             break
-         
-
-        except EntradaInvalida:
-            print("Por favor, ingrese un número válido.")
-        except MenuNoValido as e:
-            print(f"Error: {e}. Por favor, elija una opción válida.")
-       
-# Consultas
-def realizar_consultas ():
-    pass
-
-# Altas
-def alta_empleado():
-        
         while True:
+            opcion_usuario_input = input("Seleccione una opción: ")
+            if not opcion_usuario_input.strip():
+                # Si el usuario solo presiona Enter, se muestra de nuevo el menú
+                continue
             try:
-                id_empleado = input ("Ingrese su cedula: ")
-                if len(id_empleado) != 8:
-                    raise EntradaInvalida
-                break
+                opcion_usuario = int(opcion_usuario_input)
+                if 1 <= opcion_usuario <= 6:
+                    break
+                else:
+                    print("Opción no válida. Intente nuevamente.")
             except EntradaInvalida:
-                print("La cedula no tiene la cantidad de digitos necesaria")
-            
+                print("Por favor, ingrese un número válido.")
 
-        nombre = input ("Ingrese su nombre: ")
-
-        while True:
-            try:
-                fecha_nacimiento = input("Ingrese su fecha de Nacimiento: ")
-                partes = fecha_nacimiento.split('/')
-                if len(partes) != 3:
-                    raise EntradaInvalida
-                
-                dia, mes, year = partes
-                if not (len(dia) == 2 and len(mes) == 2 and len(year) == 4):
-                    raise EntradaInvalida
-                
-                if not all (char in '0123456789' for char in dia+mes+year):
-                    raise EntradaInvalida
-                
-                break
-
-            except EntradaInvalida as e:
-                print(e)
-
-        nacionalidad = input ("Ingrese su nacionalidad: ")
-
-        salario = float(input("Ingrese su salario: "))
-
-
-        print("")
-        print("Cargos: ")
-        print(" 1: Piloto ")
-        print(" 2: Piloto de Reserva ")
-        print(" 3: Mecanico ")
-        print(" 4: Jefe de equipo ")
-        print("")
-
-        cargo = int(input("Ingrese su cargo "))
-
-        if cargo in [1,2]: 
-            # Piloto principal y de reserva 
-            score = int(input("Ingrese score: "))
-            numero_auto = int(input("Ingrese número de auto: "))
-            es_reserva = cargo == 2
-            return Piloto (id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score, numero_auto, es_reserva)
-        elif cargo == 3: 
-            # Mecánico 
-            score = int(input("Ingrese score: "))
-            return Mecanico ((id_empleado, nombre, fecha_nacimiento, nacionalidad, salario, score))
-        elif cargo == 4: 
-            # Jefe de Equipo
-            return JefeEquipo ((id_empleado, nombre, fecha_nacimiento, nacionalidad, salario))
-        else:
-            print ("Cargo no disponible.")
-            return None 
-
-def alta_auto ():
-        modelo = input("Ingrese modelo del auto: ")
-        anio = int(input("Ingrese año del auto: "))
-        score = int(input("Ingrese el score del auto: "))
-
-        auto = Auto (modelo, anio, score)
-        los_autos.append(auto)
-
-        return auto
-
-def alta_equipo ():
-        nombre_equipo = input ("Ingrese nombre del equipo: ")
-        equipo = Equipo(nombre_equipo)
-
-       # Asignar auto al equipo
-        print("Datos del auto del equipo: ")
-        auto = alta_auto()
-        equipo.asignar_auto(auto)
-
-        # Crear  y agregar empleados al equipo
-        for i in range (12):
+        if opcion_usuario == 1:
             empleado = alta_empleado()
-            if empleado:
-                equipo.agregar_empleado(empleado)
+            empleados[empleado.id] = empleado
+            print(f"Empleado {empleado.nombre} agregado con éxito.")
+        elif opcion_usuario == 2:
+            auto = alta_auto()
+            autos[auto.modelo] = auto
+            print(f"Auto modelo {auto.modelo} agregado con éxito.")
+        elif opcion_usuario == 3:
+            equipo = alta_equipo(empleados, autos)
+            equipos.append(equipo)
+            print(f"Equipo {equipo.nombre} creado exitosamente.")
+        elif opcion_usuario == 4:
+            resultados_carrera = simular_Carrera(equipos)
+            print(resultados_carrera)
+        elif opcion_usuario == 5:
+            consultas(equipos)
+            print("Realizar consultas")
+        elif opcion_usuario == 6:
+            print("Finalizando programa...")
+            break
+        else:
+            print("Opción no válida. Intente nuevamente.")
 
-        los_equipos.append(equipo)
-        return equipo
-
-# Simulador de carrera
-def simuladorCarrera():
-    pass
-
-
-# Main
-menu_principal()
+if __name__ == "__main__":
+    main()
+    
 

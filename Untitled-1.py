@@ -219,8 +219,22 @@ def consultas(equipos):
 
 
 def simular_Carrera(equipos):
+
+    pilotos_lesionados = input("Ingrese nro de auto de todos los pilotos lesionados: ").split(',')
+    pilotos_abandonan = input("Ingrese nro auto de todos los pilotos que abandonan separado por coma: ").split(',')
+    pilotos_error_pits = input("Ingrese nro de auto de todos los pilotos que cometen error en pits: ").split(',')
+    pilotos_penalidad = input("Ingrese nro de auto de todos los pilotos que reciben penalidad: ").split(',')
    
     pilotos_en_carrera = obtener_pilotos_para_carrera(equipos)
+
+    for piloto in pilotos_en_carrera:
+        if str(piloto.numero_auto) in pilotos_lesionados:
+            piloto.esta_lesionado = True
+        if str(piloto.numero_auto) in pilotos_abandonan:
+            piloto.abandonó = True
+        piloto.errores_en_pits = pilotos_error_pits.count(str(piloto.numero_auto))
+        piloto.penalidades = pilotos_penalidad.count(str(piloto.numero_auto))
+
     #registrar_imprevistos(pilotos_en_carrera)
     calcular_scores(pilotos_en_carrera)
     ordenar_y_asignar_puntos(pilotos_en_carrera)
@@ -271,7 +285,10 @@ def ordenar_y_asignar_puntos(pilotos):
     pilotos_ordenados = sorted(pilotos, key=lambda p: p.score_final, reverse=True)
     puntos_por_posicion = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
     for i, piloto in enumerate(pilotos_ordenados):
-        piloto.puntos_carrera = puntos_por_posicion[i] if i < len(puntos_por_posicion) else 0
+        if i < len(puntos_por_posicion):
+            piloto.puntos_carrera = puntos_por_posicion[i]
+        else:
+            piloto.puntos_carrera = 0
 
 def restablecer_estado(pilotos):
     # Restablece el estado de los pilotos después de la carrera
@@ -496,4 +513,3 @@ def main():
 if __name__ == "__main__":
     main()
     
-

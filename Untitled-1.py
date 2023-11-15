@@ -10,7 +10,7 @@ class EntradaInvalida(Exception):
         return "Entrada inválida, por favor intente nuevamente."
 
 class Empleado:
-    def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, tipo):
+    def __init__(self, id:int, nombre, fecha_nac, nacionalidad, salario, tipo):
         self._id = id
         self._nombre = nombre
         self._fecha_nac = fecha_nac

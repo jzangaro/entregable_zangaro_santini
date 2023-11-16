@@ -1,19 +1,24 @@
 
+
+
+#Creación de excepción para entrada ya existente
 class EntradaYaExisteError(Exception):
     def __init__(self, mensaje):
         super().__init__(mensaje)
 
+#Creación de excepción para opción del Menú no válida
 class MenuNoValido (Exception):
     def __init__ (self, opcion, mensaje = "Opcion de menu no valida"):
         self.opcion = opcion
         self.mensaje = mensaje
         super().__init__(self.mensaje)
 
+#Creación de excepción para entrada de datos inválidos
 class EntradaInvalida(Exception):
     def __str__(self):
         return "Entrada inválida, por favor intente nuevamente."
 
-
+#Creación de clase Empleados
 class Empleado:
     def __init__(self, id:int, nombre, fecha_nac, nacionalidad, salario, tipo):
         self._id = id
@@ -34,7 +39,9 @@ class Empleado:
     @property
     def salario(self):
         return self._salario
-        
+
+
+#Creación de clase Piloto que hereda de Empleados
 class Piloto(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score, numero_auto, puntaje_campeonato=0, esta_lesionado=False, es_titular=True):
         super().__init__(id, nombre, fecha_nac, nacionalidad, salario, 'piloto')
@@ -50,15 +57,21 @@ class Piloto(Empleado):
         self.score_final = 0
         self.puntos_carrera = 0
 
+
+#Creación de clase Mecánico que hereda de Empleados
 class Mecanico(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score):
         super().__init__(id, nombre, fecha_nac, nacionalidad, salario, 'mecanico')
         self.score = score
 
+
+#Creación de clase Director que hereda de Empleados
 class Director(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario):
         super().__init__(id, nombre, fecha_nac, nacionalidad, salario, 'director')
 
+
+#Creación de clase Auto
 class Auto:
      def __init__(self, modelo, anio, score):
         self._modelo = modelo
@@ -76,7 +89,9 @@ class Auto:
      @property
      def score(self):
         return self._score
-        
+     
+
+#Creación de clase Equipo
 class Equipo:
     def __init__(self, nombre):
         self.nombre = nombre
@@ -85,23 +100,27 @@ class Equipo:
         self.director = None 
         self.auto = None
 
+    #Método para agregar Pilotos
     def agregar_piloto(self, piloto):
         self.pilotos.append(piloto)
         piloto.equipo = self
 
+    #Método para agregar Mecánicos
     def agregar_mecanico(self, mecanico):
         self.mecanicos.append(mecanico)
 
+    #Método para agregar Directores
     def asignar_director(self, director):
         self.director = director 
 
+    #Método para asignar Autos
     def asignar_auto(self, auto):
         self.auto = auto
 
 
 
 
-
+#Método para ingresar empleados
 def alta_empleado(empleados):
 
     while True:
@@ -159,6 +178,7 @@ def alta_empleado(empleados):
 
         return None
 
+#Método para ingresar Autos
 def alta_auto():
     modelo = input("Ingrese modelo: ")
     anio = int(input("Ingrese año: "))
@@ -166,6 +186,7 @@ def alta_auto():
 
     return Auto(modelo, anio, score)
 
+#Método para ingresar Equipos
 def alta_equipo(empleados, autos):
     nombre_equipo = input("Ingrese nombre del equipo: ")
     modelo_auto = input("Ingrese modelo de auto: ")
@@ -204,6 +225,7 @@ def alta_equipo(empleados, autos):
 
     return equipo
 
+#Método para realizar consultas
 def consultas(equipos):
     while True:
         print("\nConsultas Disponibles:")
@@ -231,6 +253,7 @@ def consultas(equipos):
         else:
          raise EntradaInvalida
 
+#Método para simular carreras
 def simular_Carrera(equipos):
     pilotos_lesionados = input("Ingrese nro de auto de todos los pilotos lesionados: ").replace(" ", "").split(',')
     pilotos_abandonan = input("Ingrese nro auto de todos los pilotos que abandonan separado por coma: ").replace(" ", "").split(',')
@@ -261,6 +284,7 @@ def simular_Carrera(equipos):
     for piloto in pilotos_en_carrera:
         print(f"{piloto.nombre}: Puntos en la carrera = {piloto.puntos_carrera}, Score final = {piloto.score_final}")
 
+#Método para obtener los pilotos de la carrera
 def obtener_pilotos_para_carrera(equipos):
     pilotos_en_carrera = []
     for equipo in equipos:
@@ -281,11 +305,12 @@ def obtener_pilotos_para_carrera(equipos):
     return pilotos_en_carrera
 
 
-
+#Método para registrar imprevistos
 def registrar_imprevistos(pilotos):
     # ?
     pass
 
+#Método para calcular scores de pilotos
 def calcular_scores(pilotos):
     # Calcula el score final de cada piloto
     for piloto in pilotos:
@@ -295,6 +320,7 @@ def calcular_scores(pilotos):
             score_mecanicos = sum(mecanico.score for mecanico in piloto.equipo.mecanicos)
             piloto.score_final = score_mecanicos + piloto.equipo.auto.score + piloto.score - 5 * piloto.errores_en_pits - 8 * piloto.penalidades
 
+#Método para ordenar y asignar puntos
 def ordenar_y_asignar_puntos(pilotos):
     # Ordena los pilotos según su score final y asigna puntos
     pilotos_ordenados = sorted(pilotos, key=lambda p: p.score_final, reverse=True)
@@ -305,6 +331,7 @@ def ordenar_y_asignar_puntos(pilotos):
         else:
             piloto.puntos_carrera = 0
 
+#Método para restablecer el estado de los pilotos después de la carrera
 def restablecer_estado(pilotos):
     # Restablece el estado de los pilotos después de la carrera
     for piloto in pilotos:
@@ -314,7 +341,7 @@ def restablecer_estado(pilotos):
         piloto.penalidades = 0
         
 
-
+#Método para obtener el Top 10 pilotos con más puntos en el campeonato
 def top_pilotos_puntos(equipos):
     pilotos = []
     for equipo in equipos:
@@ -331,6 +358,7 @@ def top_pilotos_puntos(equipos):
     for i in range (min(10,len(pilotos))):
         print(f'{pilotos[i][0]}: {pilotos[i][1]} puntos')
 
+#Método para obtener el resumen campeonato de constructores
 def resumen_constructores (equipos):
     for equipo in equipos:
         puntos_equipo = 0 
@@ -339,25 +367,28 @@ def resumen_constructores (equipos):
         
         print (f'{equipo.nombre}: {puntos_equipo} puntos')
 
+#Método para obtener el Top 5 pilotos mejores pago 
 def top_pilotos_salario(equipos):
     pilotos = [piloto for equipo in equipos for piloto in equipo.pilotos]
     pilotos_ordenados = sorted(pilotos, key=lambda p: p.salario, reverse=True)[:5]
     for piloto in pilotos_ordenados:
         print(f"{piloto.nombre}: {piloto.salario}")
 
+#Método para obtener el Top 3 pilotos más habilidosos
 def top_pilotos_habilidosos(equipos):
     pilotos = [piloto for equipo in equipos for piloto in equipo.pilotos]
     pilotos_ordenados = sorted(pilotos, key=lambda p: p.score, reverse=True)[:3]
     for piloto in pilotos_ordenados:
         print(f"{piloto.nombre}: {piloto.score} habilidad")
 
+#Método para obtener el jefe de equipo
 def jefes_equipo(equipos):
     jefes = [(equipo.director.nombre, equipo.nombre) for equipo in equipos if equipo.director]
     jefes_ordenados = sorted(jefes, key=lambda j: j[0])
     for jefe, equipo in jefes_ordenados:
         print(f"{jefe} - {equipo}")
 
-
+#Función Main para probar métodos
 def main():
 
     empleados = {}
@@ -415,9 +446,10 @@ def main():
         else:
             print("Opción no válida. Intente nuevamente.")
 
+#Función main para correr la prueba de los métodos
 if __name__ == "__main__":
     main()
     
-    
+
 
     

@@ -1,4 +1,8 @@
 
+class EntradaYaExisteError(Exception):
+    def __init__(self, mensaje):
+        super().__init__(mensaje)
+
 class MenuNoValido (Exception):
     def __init__ (self, opcion, mensaje = "Opcion de menu no valida"):
         self.opcion = opcion
@@ -8,6 +12,7 @@ class MenuNoValido (Exception):
 class EntradaInvalida(Exception):
     def __str__(self):
         return "Entrada inválida, por favor intente nuevamente."
+
 
 class Empleado:
     def __init__(self, id:int, nombre, fecha_nac, nacionalidad, salario, tipo):
@@ -29,7 +34,6 @@ class Empleado:
     @property
     def salario(self):
         return self._salario
-
         
 class Piloto(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score, numero_auto, puntaje_campeonato=0, esta_lesionado=False, es_titular=True):
@@ -45,9 +49,6 @@ class Piloto(Empleado):
         self.penalidades = 0
         self.score_final = 0
         self.puntos_carrera = 0
-
- 
-        
 
 class Mecanico(Empleado):
     def __init__(self, id, nombre, fecha_nac, nacionalidad, salario, score):
@@ -101,16 +102,20 @@ class Equipo:
 
 
 
-def alta_empleado():
+def alta_empleado(empleados):
 
     while True:
         try:
             cedula = input("Ingrese cedula (8 dígitos): ")
             if len(cedula) != 8 or not cedula.isdigit():
                 raise EntradaInvalida()
+            if cedula in empleados:
+                raise EntradaYaExisteError (f'Empleado con cedula {cedula} ya existe')
             break
         except EntradaInvalida:
             print("La cédula debe tener exactamente 8 dígitos.")
+        except EntradaYaExisteError as e:
+            print (e)
 
     nombre = input("Ingrese nombre: ")
 
@@ -151,6 +156,7 @@ def alta_empleado():
         return Director(cedula, nombre, fecha_nacimiento, nacionalidad, salario)
     else:
         print("Cargo no válido.")
+
         return None
 
 def alta_auto():
@@ -165,9 +171,14 @@ def alta_equipo(empleados, autos):
     modelo_auto = input("Ingrese modelo de auto: ")
 
     # Buscar el auto por su modelo
-    auto = autos.get(modelo_auto)  # Asumiendo que 'autos' es un diccionario con modelos como claves
+    auto = autos.get(modelo_auto)  
+    if auto is None:
+        print("Modelo de auto no encontrado.")
+        return None
     equipo = Equipo(nombre_equipo)
     equipo.asignar_auto(auto)
+
+    cedulas_asignadas = set()
 
     for rol in ["piloto titular", "piloto titular", "piloto de reserva", "jefe de equipo"] + ["mecánico"] * 8:
         while True:
@@ -175,9 +186,12 @@ def alta_equipo(empleados, autos):
                 cedula = input(f"Ingrese cédula del {rol} (8 dígitos): ")
                 if len(cedula) != 8 or not cedula.isdigit():
                     raise EntradaInvalida()
+                if cedula in cedulas_asignadas:
+                    raise EntradaYaExisteError(f"La cédula {cedula} ya ha sido asignada a otro miembro de este equipo.")
                 empleado = empleados.get(cedula)
                 if empleado is None:
                     raise EntradaInvalida("Empleado no encontrado.")
+                cedulas_asignadas.add(cedula)
                 if rol in ["piloto titular", "piloto de reserva"]:
                     equipo.agregar_piloto(empleado)
                 elif rol == "jefe de equipo":
@@ -212,63 +226,64 @@ def consultas(equipos):
          top_pilotos_habilidosos(equipos)
         elif opcion == 5:
          jefes_equipo(equipos)
+        elif opcion == 6:
+         break  # Esto permitirá salir del bucle y volver al menú principal
         else:
          raise EntradaInvalida
 
-
-
-
 def simular_Carrera(equipos):
+    pilotos_lesionados = input("Ingrese nro de auto de todos los pilotos lesionados: ").replace(" ", "").split(',')
+    pilotos_abandonan = input("Ingrese nro auto de todos los pilotos que abandonan separado por coma: ").replace(" ", "").split(',')
+    pilotos_error_pits = input("Ingrese nro de auto de todos los pilotos que cometen error en pits: ").replace(" ", "").split(',') 
+    pilotos_penalidad = input("Ingrese nro de auto de todos los pilotos que reciben penalidad: ").replace(" ", "").split(',')
 
-    pilotos_lesionados = input("Ingrese nro de auto de todos los pilotos lesionados: ").split(',')
-    pilotos_abandonan = input("Ingrese nro auto de todos los pilotos que abandonan separado por coma: ").split(',')
-    pilotos_error_pits = input("Ingrese nro de auto de todos los pilotos que cometen error en pits: ").split(',')
-    pilotos_penalidad = input("Ingrese nro de auto de todos los pilotos que reciben penalidad: ").split(',')
-   
+    # Actualizar el estado de los pilotos según los inputs
+    for equipo in equipos:
+        for piloto in equipo.pilotos:
+            if str(piloto.numero_auto) in pilotos_lesionados:
+                piloto.esta_lesionado = True
+            if str(piloto.numero_auto) in pilotos_abandonan:
+                piloto.abandonó = True
+            piloto.errores_en_pits = pilotos_error_pits.count(str(piloto.numero_auto))
+            piloto.penalidades = pilotos_penalidad.count(str(piloto.numero_auto))
+
+    # Obtener pilotos para la carrera
     pilotos_en_carrera = obtener_pilotos_para_carrera(equipos)
 
-    for piloto in pilotos_en_carrera:
-        if str(piloto.numero_auto) in pilotos_lesionados:
-            piloto.esta_lesionado = True
-        if str(piloto.numero_auto) in pilotos_abandonan:
-            piloto.abandonó = True
-        piloto.errores_en_pits = pilotos_error_pits.count(str(piloto.numero_auto))
-        piloto.penalidades = pilotos_penalidad.count(str(piloto.numero_auto))
-
-    #registrar_imprevistos(pilotos_en_carrera)
+    # Calcular scores y asignar puntos
     calcular_scores(pilotos_en_carrera)
     ordenar_y_asignar_puntos(pilotos_en_carrera)
+
+    # Restablecer estado de los pilotos
     restablecer_estado(pilotos_en_carrera)
 
-    # Imprimir los resultados de la carrera
+    # Imprimir resultados de la carrera
     for piloto in pilotos_en_carrera:
         print(f"{piloto.nombre}: Puntos en la carrera = {piloto.puntos_carrera}, Score final = {piloto.score_final}")
 
 def obtener_pilotos_para_carrera(equipos):
     pilotos_en_carrera = []
     for equipo in equipos:
-        pilotos_titulares = [p for p in equipo.pilotos if p.es_titular]
-        piloto_reserva = next((p for p in equipo.pilotos if not p.es_titular), None)
+        titulares = [p for p in equipo.pilotos if p.es_titular]
+        reservas = [p for p in equipo.pilotos if not p.es_titular]
 
-        # Verificar disponibilidad de los pilotos titulares
-        pilotos_disponibles = [p for p in pilotos_titulares if not p.esta_lesionado and not p.abandonó]
+        # Identificar titulares disponibles
+        titulares_disponibles = [p for p in titulares if not p.esta_lesionado and not p.abandonó]
+        pilotos_en_carrera.extend(titulares_disponibles)
 
-        if len(pilotos_disponibles) == 2:
-            # Ambos titulares disponibles
-            pilotos_en_carrera.extend(pilotos_disponibles)
-        elif len(pilotos_disponibles) == 1:
-            # Un titular disponible, el otro es reemplazado por el piloto de reserva
-            pilotos_en_carrera.extend(pilotos_disponibles)
-            if piloto_reserva:
-                pilotos_en_carrera.append(piloto_reserva)
-        elif piloto_reserva:
-            # Ningún titular disponible, ambos reemplazados por el piloto de reserva
-            pilotos_en_carrera.append(piloto_reserva)
+        # Añadir reserva si es necesario
+        for reserva in reservas:
+            if len(titulares_disponibles) < 2 and not reserva.esta_lesionado and not reserva.abandonó:
+                pilotos_en_carrera.append(reserva)
+                titulares_disponibles.append(reserva)  # Asegurar que no se agregue más de un reserva
+                break
 
     return pilotos_en_carrera
 
+
+
 def registrar_imprevistos(pilotos):
-    # ni idea aca
+    # ?
     pass
 
 def calcular_scores(pilotos):
@@ -297,8 +312,7 @@ def restablecer_estado(pilotos):
         piloto.abandonó = False
         piloto.errores_en_pits = 0
         piloto.penalidades = 0
-
-
+        
 
 
 def top_pilotos_puntos(equipos):
@@ -344,16 +358,17 @@ def jefes_equipo(equipos):
         print(f"{jefe} - {equipo}")
 
 
-
-
-
-
 def main():
+
     empleados = {}
     autos = {}
     equipos = []
-    
+
+    print('')
+    input('PRESIONE ENTER PARA EMPEZAR PROGRAMA')
+ 
     while True:
+        print('')
         print("1. Alta de empleado")
         print("2. Alta de auto")
         print("3. Alta de equipo")
@@ -362,6 +377,7 @@ def main():
         print("6. Finalizar programa")
 
         while True:
+            print('')
             opcion_usuario_input = input("Seleccione una opción: ")
             if not opcion_usuario_input.strip():
                 # Si el usuario solo presiona Enter, se muestra de nuevo el menú
@@ -376,7 +392,7 @@ def main():
                 print("Por favor, ingrese un número válido.")
 
         if opcion_usuario == 1:
-            empleado = alta_empleado()
+            empleado = alta_empleado(empleados)
             empleados[empleado.id] = empleado
             print(f"Empleado {empleado.nombre} agregado con éxito.")
         elif opcion_usuario == 2:
@@ -392,15 +408,16 @@ def main():
             print(resultados_carrera)
         elif opcion_usuario == 5:
             consultas(equipos)
-            print("Realizar consultas (Función aún no implementada).")
+            print("Realizar consultas")
         elif opcion_usuario == 6:
             print("Finalizando programa...")
             break
         else:
             print("Opción no válida. Intente nuevamente.")
 
-
-
 if __name__ == "__main__":
     main()
+    
+    
+
     

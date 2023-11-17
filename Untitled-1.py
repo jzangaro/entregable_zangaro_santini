@@ -463,6 +463,7 @@ def main():
             elif opcion_usuario == 3:
                 if len(equipos) >= 10:
                     print("No se pueden agregar más equipos. Ya se ha alcanzado el límite de 10 equipos.")
+                    continue
                 else:
                     equipo = alta_equipo(empleados, autos)
                     if equipo:

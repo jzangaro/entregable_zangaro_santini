@@ -461,19 +461,20 @@ def main():
                     autos[auto.modelo] = auto
                     print(f"Auto modelo {auto.modelo} agregado con éxito.")
             elif opcion_usuario == 3:
-                equipo = alta_equipo(empleados, autos)
-                if equipo:
-                    equipos.append(equipo)
-                    print(f"Equipo {equipo.nombre} creado exitosamente.")
+                if len(equipos) >= 10:
+                    print("No se pueden agregar más equipos. Ya se ha alcanzado el límite de 10 equipos.")
+                else:
+                    equipo = alta_equipo(empleados, autos)
+                    if equipo:
+                        equipos.append(equipo)
+                        print(f"Equipo {equipo.nombre} creado exitosamente.")
             elif opcion_usuario == 4:
                 # Guardar estado original antes de la carrera
                 for equipo in equipos:
                     for piloto in equipo.pilotos:
                         estado_original[piloto.id] = (piloto.esta_lesionado, piloto.abandonó)
-
                 resultados_carrera = simular_Carrera(equipos)
                 print(resultados_carrera)
-
             elif opcion_usuario == 5:
                 consultas(equipos)
 
